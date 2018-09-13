@@ -87,11 +87,15 @@ public class Character_PM : MonoBehaviour {
     protected virtual void ProcessPM()
     {
         transform.position = tempPosition;
-
+        /*
         if (characterDTrigger[directionNum_Temp].trigger == false)
         {
             directionNum = directionNum_Temp;
         }
+        //이게 해당 방향에 벽이 없을 경우, 방향을 변경한다.
+        */
+        directionNum = directionNum_Temp; //벽이 있을 때도 방향 변경 가능
+
         directionNum_Temp = directionNum;
 
         if (characterDTrigger[directionNum_Temp].trigger == true)
