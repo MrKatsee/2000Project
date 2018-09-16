@@ -24,6 +24,8 @@ public class Character_PM : MonoBehaviour {
 
     protected Vector2 tempPosition;
 
+    public int pNum;
+
     private void Awake()
     {
         tempPosition.x = (int)transform.position.x + 0.5f;
