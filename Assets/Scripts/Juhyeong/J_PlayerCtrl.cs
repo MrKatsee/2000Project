@@ -31,7 +31,6 @@ public class J_PlayerCtrl : MonoBehaviour {
 		OutsideR = IsOutsideWallR ();
 		OutsideL = IsOutsideWallL ();
 		Movement (!OutsideR,!OutsideL);
-		Debug.Log ((!OutsideR).ToString());
 		Attack (bulletLv);
     }
 
