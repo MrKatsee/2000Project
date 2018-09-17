@@ -65,7 +65,6 @@ public class UIManager_Snake : MonoBehaviour {
     Vector2 botRightPos;
 
     Font myFont;
-    
 
     void InitUI()
     {

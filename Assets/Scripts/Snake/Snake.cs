@@ -75,6 +75,7 @@ public class Snake : MonoBehaviour {
         private static Sprite headSprite;
         private static Sprite bodySprite;
         private static Sprite tailSprite;
+        private static Sprite body2Sprite;
         private static LinkedList<SnakeObject> objects = new LinkedList<SnakeObject>();
         private static Transform parentTransform;
 
@@ -100,6 +101,7 @@ public class Snake : MonoBehaviour {
         {
             headSprite = Resources.Load<Sprite>("Sprites/SnakeHead");
             bodySprite = Resources.Load<Sprite>("Sprites/SnakeBody");
+            body2Sprite = Resources.Load<Sprite>("Sprites/SnakeBody2");
             tailSprite = Resources.Load<Sprite>("Sprites/SnakeTail");
         }
 
@@ -114,6 +116,123 @@ public class Snake : MonoBehaviour {
             return false;
         }
 
+        public static void SortObject(LinkedListNode<SnakeObject> node)
+        {
+            SnakeObject nowObject = node.Value;
+            SnakeObject prevObject = node.Previous.Value;
+            if (node != objects.Last)
+            {
+                SnakeObject nextObject = node.Next.Value;
+                if (nextObject.y == nowObject.y && prevObject.x == nowObject.x)
+                {
+                    nowObject.SetSprite(body2Sprite);
+                    if (nextObject.x > nowObject.x)
+                    {
+                        if (prevObject.y > nowObject.y)
+                        {
+                            // ┌
+                            // 0, 0, -90
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, -90f);
+
+                        }
+                        else
+                        {
+                            // └
+                            // 0, 0, 0
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 0f);
+                        }
+                    }
+                    else
+                    {
+                        if (prevObject.y > nowObject.y)
+                        {
+                            //  ┐
+                            // 0, 0, 180
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 180f);
+                        }
+                        else
+                        {
+                            //  ┘
+                            // 0, 0, 90
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 90f);
+                        }
+                    }
+                }
+                else if (prevObject.y == nowObject.y && nextObject.x == nowObject.x)
+                {
+                    nowObject.SetSprite(body2Sprite);
+                    if (prevObject.x > nowObject.x)
+                    {
+                        if (nextObject.y > nowObject.y)
+                        {
+                            // ┌
+                            // 0, 0, -90
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, -90f);
+
+                        }
+                        else
+                        {
+                            // └
+                            // 0, 0, 0
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 0f);
+                        }
+                    }
+                    else
+                    {
+                        if (nextObject.y > nowObject.y)
+                        {
+                            //  ┐
+                            // 0, 0, 180
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 180f);
+                        }
+                        else
+                        {
+                            //  ┘
+                            // 0, 0, 90
+                            nowObject.transform.localRotation = Quaternion.Euler(0, 0, 90f);
+                        }
+                    }
+                }
+                else
+                {
+                    nowObject.SetSprite(bodySprite);
+                    if (prevObject.y != nowObject.y)
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, 0f);
+                    }
+                    else
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, 90f);
+                    }
+                }
+            }
+            else // 꼬리일 때
+            {
+                if (prevObject.x == nowObject.x)
+                {
+                    if (prevObject.y > nowObject.y)
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, 180f);
+                    }
+                    else
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, 0f);
+                    }
+                }
+                else
+                {
+                    if (prevObject.x > nowObject.x)
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, -90f);
+                    }
+                    else
+                    {
+                        nowObject.transform.localRotation = Quaternion.Euler(0, 0, 90f);
+                    }
+                }
+            }
+        }
+
         public static void MoveObject(HeadDirection headDirection)
         {
             SnakeObject headObject = objects.First.Value;
@@ -125,24 +244,28 @@ public class Snake : MonoBehaviour {
                     {
                         y--;
                         if (y <= 0) y = PlayManager_Snake.Length;
+                        headObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
                         break;
                     }
                 case HeadDirection.Down:
                     {
                         y++;
                         if (y > PlayManager_Snake.Length) y = 1;
+                        headObject.transform.localRotation = Quaternion.Euler(0, 0, 180f);
                         break;
                     }
                 case HeadDirection.Left:
                     {
                         x--;
                         if (x <= 0) x = PlayManager_Snake.Length;
+                        headObject.transform.localRotation = Quaternion.Euler(0, 0, 90f);
                         break;
                     }
                 case HeadDirection.Right:
                     {
                         x++;
                         if (x > PlayManager_Snake.Length) x = 1;
+                        headObject.transform.localRotation = Quaternion.Euler(0, 0, -90f);
                         break;
                     }
             }
@@ -158,39 +281,65 @@ public class Snake : MonoBehaviour {
                     case "Tail":
                     case "Wall":
                         {
+                            LinkedListNode<SnakeObject> node = objects.Last;
+                            while (true)
+                            {
+                                if (node.Previous == null) break; // 머리의 좌표는 이 루프문에서 수정하지 않는다.
+                                SnakeObject nowObject = node.Value;
+                                SnakeObject prevObject = node.Previous.Value;
+                                nowObject.SetCoordinate(prevObject.x, prevObject.y);
+                                nowObject.SetPosition();
+                                node = node.Previous;
+                            }
+                            headObject.SetCoordinate(x, y); // 머리의 좌표를 수정한다.
+                            headObject.SetPosition();
+                            node = objects.Last;
+                            while (true)
+                            {
+                                if (node.Previous == null) break; // 머리의 스프라이트는 이 루프문에서 수정하지 않는다.
+                                SortObject(node);
+                                node = node.Previous;
+                            }
                             snake.isAlive = false;
                             break;
                         }
-                    case "Apple":
+                    case "Apple": // 먹었을 때는 머리 바로 다음 칸의 스프라이트만을 수정한다.
                         {
                             // 1up
                             Destroy(col2D.gameObject);
                             headObject.SetCoordinate(x, y);
                             headObject.SetPosition();
-                            CreateObject(SnakeObjectType.Body, headDirection);
-                            PlayManager_Snake.CreateApple();
+                            SortObject(CreateObject(SnakeObjectType.Body, headDirection));
+                            snake.isAppleIsNull = true;
                             break;
                         }
                 }
             }
-            else // 그냥 움직임
+            else // 그냥 움직일 때는 모든 스프라이트를 수정한다.
             {
                 LinkedListNode<SnakeObject> node = objects.Last;
                 while (true)
                 {
-                    if (node.Previous == null) break;
-                    SnakeObject prevObject = node.Previous.Value;
+                    if (node.Previous == null) break; // 머리의 좌표는 이 루프문에서 수정하지 않는다.
                     SnakeObject nowObject = node.Value;
+                    SnakeObject prevObject = node.Previous.Value;
                     nowObject.SetCoordinate(prevObject.x, prevObject.y);
                     nowObject.SetPosition();
                     node = node.Previous;
                 }
-                headObject.SetCoordinate(x, y);
+                headObject.SetCoordinate(x, y); // 머리의 좌표를 수정한다.
                 headObject.SetPosition();
+                node = objects.Last;
+                while (true)
+                {
+                    if (node.Previous == null) break; // 머리의 스프라이트는 이 루프문에서 수정하지 않는다.
+                    SortObject(node);
+                    node = node.Previous;
+                }
             }
         }
 
-        public static void CreateObject(SnakeObjectType type, HeadDirection headDirection)
+        public static LinkedListNode<SnakeObject> CreateObject(SnakeObjectType type, HeadDirection headDirection)
         {
             GameObject newObject = Instantiate(prefab, parentTransform);
             newObject.name = System.Enum.GetName(typeof(SnakeObjectType), type);
@@ -200,12 +349,12 @@ public class Snake : MonoBehaviour {
                     {
                         int center = PlayManager_Snake.Center;
                         newObject.tag = "Head";
+                        newObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
                         SnakeObject newSnakeObject = new SnakeObject(center, center, type, newObject.transform, newObject.GetComponent<SpriteRenderer>());
                         newSnakeObject.SetSprite(headSprite);
                         newSnakeObject.SetScale();
                         newSnakeObject.SetPosition();
-                        objects.AddFirst(newSnakeObject);
-                        break;
+                        return objects.AddFirst(newSnakeObject);
                     }
                 case SnakeObjectType.Tail:
                     {
@@ -220,7 +369,7 @@ public class Snake : MonoBehaviour {
                             newSnakeObject.SetSprite(tailSprite);
                             newSnakeObject.SetScale();
                             newSnakeObject.SetPosition();
-                            objects.AddLast(newSnakeObject);
+                            return objects.AddLast(newSnakeObject);
                         }
                         break;
                     }
@@ -265,11 +414,12 @@ public class Snake : MonoBehaviour {
                             newSnakeObject.SetSprite(bodySprite);
                             newSnakeObject.SetScale();
                             newSnakeObject.SetPosition();
-                            objects.AddAfter(headObjectNode, newSnakeObject);
+                            return objects.AddAfter(headObjectNode, newSnakeObject);
                         }
                         break;
                     }
             }
+            return null;
         }
 
         public int x;
@@ -314,6 +464,7 @@ public class Snake : MonoBehaviour {
 
     int length; // "처음" 길이
     bool isAlive;
+    bool isAppleIsNull;
     [SerializeField]
     HeadDirection headDir;
 
@@ -321,6 +472,7 @@ public class Snake : MonoBehaviour {
     {
         snake.length = 3;
         snake.isAlive = true;
+        snake.isAppleIsNull = false;
         snake.headDir = HeadDirection.Stop;
         SnakeObject.SetPrefab();
         SnakeObject.SetParent(transform);
@@ -349,7 +501,7 @@ public class Snake : MonoBehaviour {
         while (nowTime < time)
         {
             if (Input.GetKey(KeyCode.UpArrow) && headDir != HeadDirection.Down) tempValue = HeadDirection.Up;
-            if (Input.GetKey(KeyCode.DownArrow) && headDir != HeadDirection.Up) tempValue = HeadDirection.Down;
+            if (Input.GetKey(KeyCode.DownArrow) && (headDir != HeadDirection.Up && headDir != HeadDirection.Stop)) tempValue = HeadDirection.Down;
             if (Input.GetKey(KeyCode.LeftArrow) && headDir != HeadDirection.Right) tempValue = HeadDirection.Left;
             if (Input.GetKey(KeyCode.RightArrow) && headDir != HeadDirection.Left) tempValue = HeadDirection.Right;
             nowTime += Time.deltaTime;
@@ -360,7 +512,6 @@ public class Snake : MonoBehaviour {
 
     IEnumerator Routine()
     {
-
         yield return new WaitUntil(() => PlayManager_Snake.IsInitalized);
         snake.InitSnake();
         PlayManager_Snake.CreateApple();
@@ -370,12 +521,10 @@ public class Snake : MonoBehaviour {
             yield return new WaitUntil(
                 () =>
                 Input.GetKey(KeyCode.UpArrow) ||
-                Input.GetKey(KeyCode.DownArrow) ||
                 Input.GetKey(KeyCode.LeftArrow) ||
                 Input.GetKey(KeyCode.RightArrow)
             );
             if (Input.GetKey(KeyCode.UpArrow)) headDir = HeadDirection.Up;
-            if (Input.GetKey(KeyCode.DownArrow)) headDir = HeadDirection.Down;
             if (Input.GetKey(KeyCode.LeftArrow)) headDir = HeadDirection.Left;
             if (Input.GetKey(KeyCode.RightArrow)) headDir = HeadDirection.Right;
         }
@@ -385,12 +534,25 @@ public class Snake : MonoBehaviour {
             yield return StartCoroutine(InputWhileDelay(PlayManager_Snake.DelaySecond));
             SnakeObject.MoveObject(headDir);
             if (SnakeObject.Count >= (PlayManager_Snake.Length - 2) * (PlayManager_Snake.Length - 2)) break;
+            else
+            {
+                if (isAppleIsNull)
+                {
+                    PlayManager_Snake.CreateApple();
+                    isAppleIsNull = false;
+                }
+            }
         }
 
         if (isAlive)
         {
             // 2김
             Debug.Log("2김");
+        }
+        else
+        {
+            // 짐
+            Debug.Log("짐");
         }
     }
 }
