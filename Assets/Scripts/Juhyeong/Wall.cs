@@ -6,8 +6,8 @@ public class Wall : MonoBehaviour {
 
     #region Singleton
     public static Wall instance;
-    public GameObject wall1;
-    public GameObject wall2;
+    public GameObject wallR;
+    public GameObject wallL;
 
     void Awake()
     {

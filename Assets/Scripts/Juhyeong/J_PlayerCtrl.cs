@@ -11,8 +11,9 @@ public class J_PlayerCtrl : MonoBehaviour {
 
     public GameObject bulletFolder;
 
-
-    private int myLv = 1; 
+	private bool OutsideR;
+	private bool OutsideL;
+    private int bulletLv = 1; 
 
     private Transform FirePos;
     private Rigidbody2D playerRB;
@@ -20,45 +21,108 @@ public class J_PlayerCtrl : MonoBehaviour {
     void Start () {
         playerRB = GetComponent<Rigidbody2D>();
         FirePos = transform.GetChild(0);
-        float initialXPos = (Wall.instance.wall1.transform.position.x + Wall.instance.wall2.transform.position.x)/2f; 
+		OutsideR = false; OutsideL = false;
+        float initialXPos = (Wall.instance.wallR.transform.position.x + Wall.instance.wallL.transform.position.x)/2f; 
         gameObject.transform.position = new Vector2(initialXPos,transform.position.y);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        //이동키 정의 (A,D , ->,<-)
-		if(Input.GetKey(KeyCode.RightArrow)|| Input.GetKey(KeyCode.D))
-        {
-            
-            playerRB.velocity=new Vector2(4, 0f);
-            
-
-        } 
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D))
-        {
-            playerRB.velocity = Vector2.zero;
-
-        }
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        {
-            playerRB.velocity = new Vector2(-4, 0f);
-
-
-        }
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A))
-        {
-            playerRB.velocity = Vector2.zero;
-
-        }
-        //Space 누르면 공격 정의
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject myBullet;
-            myBullet =Instantiate(bullet_Lv1, new Vector3(FirePos.transform.position.x, FirePos.transform.position.y, FirePos.transform.position.z),transform.rotation) as GameObject;
-            myBullet.transform.SetParent(bulletFolder.transform);
-            myBullet.GetComponent<Rigidbody2D>().velocity= new Vector2(0,8);
-        }
-
-
+		OutsideR = IsOutsideWallR ();
+		OutsideL = IsOutsideWallL ();
+		Movement (!OutsideR,!OutsideL);
+		Debug.Log ((!OutsideR).ToString());
+		Attack (bulletLv);
     }
+
+
+	//키 정의 (A,D , ->,<- , SPACE)
+	private void Movement(bool RMovable, bool LMovable){
+		//움직일 수 있을 때(벽 사이에 있음)
+		if (RMovable) {
+			if (Input.GetKey (KeyCode.RightArrow) || Input.GetKey (KeyCode.D)) {
+				playerRB.velocity = new Vector2 (8, 0f);
+			}
+		} else {
+			if(playerRB.velocity.x>0){// If Try to go Outside Wall then Stop
+				playerRB.velocity = Vector2.zero; 
+			}
+		}
+
+		if (LMovable) {
+			if (Input.GetKey (KeyCode.LeftArrow) || Input.GetKey (KeyCode.A)) {
+				playerRB.velocity = new Vector2 (-8, 0f);
+			}
+		} else {
+			if(playerRB.velocity.x<0){// If Try to go Outside Wall then Stop
+				playerRB.velocity = Vector2.zero;
+			}
+		}
+
+		//KeyUp이면 멈춤
+		if (Input.GetKeyUp (KeyCode.RightArrow) || Input.GetKeyUp (KeyCode.D)) 
+		{
+			playerRB.velocity = Vector2.zero;
+		}
+		if (Input.GetKeyUp (KeyCode.LeftArrow) || Input.GetKeyUp (KeyCode.A)) {
+			playerRB.velocity = Vector2.zero;
+		}
+	}
+
+	//오른쪽벽 밖으로 나가면 false
+	private bool IsOutsideWallR(){ 
+		if (transform.position.x >= Wall.instance.wallR.transform.position.x) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	//왼쪽벽 밖으로 나가면 false
+	private bool IsOutsideWallL(){ 
+		if (transform.position.x <= Wall.instance.wallL.transform.position.x) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	//Attack On SpaceKeyDown
+	private void Attack(int myBLv){
+		//Space 누르면 공격 정의
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			GameObject myBullet;
+			switch (myBLv) {
+			case 1:
+				myBullet =Instantiate(bullet_Lv1, new Vector3(FirePos.transform.position.x, FirePos.transform.position.y, FirePos.transform.position.z),transform.rotation) as GameObject;
+				//Bullet을 불렛 폴더에 이동
+				myBullet.transform.SetParent(bulletFolder.transform);
+				//Bullet Fire
+				myBullet.GetComponent<Rigidbody2D>().velocity= new Vector2(0,8);
+				break;
+			case 2:
+				myBullet = Instantiate (bullet_Lv2, new Vector3 (FirePos.transform.position.x, FirePos.transform.position.y, FirePos.transform.position.z), transform.rotation) as GameObject;
+				//Bullet을 불렛 폴더에 이동
+				myBullet.transform.SetParent(bulletFolder.transform);
+				//Bullet Fire
+				myBullet.GetComponent<Rigidbody2D>().velocity= new Vector2(0,8);
+				break;
+			case 3: 
+				myBullet = Instantiate (bullet_Lv1, new Vector3 (FirePos.transform.position.x, FirePos.transform.position.y, FirePos.transform.position.z), transform.rotation) as GameObject;
+				//Bullet을 불렛 폴더에 이동
+				myBullet.transform.SetParent(bulletFolder.transform);
+				//Bullet Fire
+				myBullet.GetComponent<Rigidbody2D>().velocity= new Vector2(0,8);
+				break;
+
+			default:
+				Debug.Log ("No Bullet Corresponding This Bullet Lv");
+
+				break;
+			}
+
+		}
+
+	}
 }

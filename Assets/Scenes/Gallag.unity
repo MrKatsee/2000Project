@@ -448,8 +448,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9803015b51f1f6f4cba46caff1736d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wall1: {fileID: 1368067529}
-  wall2: {fileID: 2009152613}
+  wallR: {fileID: 1368067529}
+  wallL: {fileID: 2009152613}
 --- !u!1 &1164441023
 GameObject:
   m_ObjectHideFlags: 0
