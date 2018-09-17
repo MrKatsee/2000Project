@@ -76,7 +76,7 @@ public class Snake : MonoBehaviour {
         private static Sprite bodySprite;
         private static Sprite tailSprite;
         private static Sprite body2Sprite;
-        private static LinkedList<SnakeObject> objects = new LinkedList<SnakeObject>();
+        private static LinkedList<SnakeObject> objects;
         private static Transform parentTransform;
 
         public static int Count
@@ -89,6 +89,7 @@ public class Snake : MonoBehaviour {
 
         public static void SetPrefab()
         {
+            objects = new LinkedList<SnakeObject>();
             prefab = Resources.Load<GameObject>("Prefabs/SpriteObject");
         }
 
@@ -272,13 +273,11 @@ public class Snake : MonoBehaviour {
             Vector2 nowPos = headObject.transform.localPosition;
             Vector2 targetPos = PlayManager_Snake.GetPosition(x, y);
             Collider2D col2D = Physics2D.OverlapPoint(targetPos);
-            if (col2D) // 뭔가에 충돌
+            if (col2D && col2D.tag != "Tail") // 뭔가에 충돌
             {
-                Debug.Log(col2D.tag);
                 switch (col2D.tag)
                 {
                     case "Body":
-                    case "Tail":
                     case "Wall":
                         {
                             LinkedListNode<SnakeObject> node = objects.Last;
@@ -514,6 +513,7 @@ public class Snake : MonoBehaviour {
     {
         yield return new WaitUntil(() => PlayManager_Snake.IsInitalized);
         snake.InitSnake();
+        UIManager_Snake.StartUI(true);
         PlayManager_Snake.CreateApple();
 
         if (headDir == HeadDirection.Stop)
@@ -527,6 +527,7 @@ public class Snake : MonoBehaviour {
             if (Input.GetKey(KeyCode.UpArrow)) headDir = HeadDirection.Up;
             if (Input.GetKey(KeyCode.LeftArrow)) headDir = HeadDirection.Left;
             if (Input.GetKey(KeyCode.RightArrow)) headDir = HeadDirection.Right;
+            UIManager_Snake.StartUI(false);
         }
 
         while (isAlive)
@@ -547,12 +548,18 @@ public class Snake : MonoBehaviour {
         if (isAlive)
         {
             // 2김
-            Debug.Log("2김");
+            UIManager_Snake.EndUI(true);
         }
         else
         {
             // 짐
-            Debug.Log("짐");
+            UIManager_Snake.EndUI(false);
         }
+    }
+
+    private void OnDestroy()
+    {
+        isInitalized = false;
+        snake = null;
     }
 }

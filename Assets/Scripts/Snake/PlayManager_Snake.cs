@@ -174,6 +174,10 @@ public class PlayManager_Snake : MonoBehaviour {
         appleSprite = Resources.Load<Sprite>("Sprites/Apple");
         UIManager_Snake.Init();
         Snake.Init();
+        Vector2 firstVector = Camera.main.WorldToScreenPoint(GetPosition(1, 1));
+        Vector2 lastVector = Camera.main.WorldToScreenPoint(GetPosition(2, 2));
+        Vector2 finalVector = firstVector - lastVector;
+        UIManager_Snake.SetRawImage(new Vector2(Mathf.Abs(finalVector.x), Mathf.Abs(finalVector.y)));
         WallObject.SetParent(transform);
         for(int y = 1; y <= length; ++y)
         {
@@ -192,11 +196,10 @@ public class PlayManager_Snake : MonoBehaviour {
         }
     }
 
-    int level = 0; // 레벨
     int score = 0; // 점수
-    int length = 9; // 필드의 한 변의 길이
+    int length = 21; // 필드의 한 변의 길이
     float slotSize { get { return Mathf.Abs((UIManager_Snake.TopLeftPos - GetPosition(1, 1)).x * 2); } }
-    float delaySecond = 0.25f;
+    float delaySecond = 0.225f;
 
     public static int Length
     {
@@ -243,5 +246,12 @@ public class PlayManager_Snake : MonoBehaviour {
     {
         if(!isInitalized) Init();
     }
+
+    private void OnDestroy()
+    {
+        isInitalized = false;
+        playManager = null;
+    }
+
 
 }
