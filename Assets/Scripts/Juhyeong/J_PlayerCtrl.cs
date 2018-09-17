@@ -8,7 +8,7 @@ public class J_PlayerCtrl : MonoBehaviour {
     public GameObject bullet_Lv1;
     public GameObject bullet_Lv2;
     public GameObject bullet_Lv3;
-
+    public GameObject Lose;
     public GameObject bulletFolder;
 
 	private bool OutsideR;
@@ -17,8 +17,13 @@ public class J_PlayerCtrl : MonoBehaviour {
 
     private Transform FirePos;
     private Rigidbody2D playerRB;
+
+    public static bool OnPlay;
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
+        OnPlay = true;
+        Lose.SetActive(false);
         playerRB = GetComponent<Rigidbody2D>();
         FirePos = transform.GetChild(0);
 		OutsideR = false; OutsideL = false;
@@ -27,16 +32,28 @@ public class J_PlayerCtrl : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
+
 		OutsideR = IsOutsideWallR ();
 		OutsideL = IsOutsideWallL ();
 		Movement (!OutsideR,!OutsideL);
-		Attack (bulletLv);
+        if(OnPlay)        Attack (bulletLv);
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.GetComponent<J_EnemyAI>() != null)
+        {
+            Lose.SetActive(true);
+            OnPlay = false;
+            Debug.Log("Loser");
 
-	//키 정의 (A,D , ->,<- , SPACE)
-	private void Movement(bool RMovable, bool LMovable){
+        }
+    }
+
+    //키 정의 (A,D , ->,<- , SPACE)
+    private void Movement(bool RMovable, bool LMovable){
 		//움직일 수 있을 때(벽 사이에 있음)
 		if (RMovable) {
 			if (Input.GetKey (KeyCode.RightArrow) || Input.GetKey (KeyCode.D)) {

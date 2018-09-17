@@ -32,7 +32,7 @@ public class J_EnemyAI : MonoBehaviour {
         ToPlayerVec = (J_PlayerManager.instance.player.transform.position - transform.position).normalized;
         ToHomeVec = (HomePos.transform.position - transform.position).normalized;
         randomTimer += Time.deltaTime;
-        if (randomTimer >= 6)
+        if (randomTimer >= 3)
         {
             int i = Random.Range(1, 21);
             if ((i == 5 ||i==2||i==3)&& moveToPlayer == false && moveToHomePos ==false)
@@ -77,12 +77,14 @@ public class J_EnemyAI : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other)
     {
         OnTriggerStay2D(other);
+        
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.GetComponent<J_BulletDestroy>() != null)
         {
+            J_GameManager.score += 1;
             Destroy(other.gameObject);
             Destroy(this.gameObject);
         }
