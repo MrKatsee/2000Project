@@ -16,7 +16,7 @@ public class UIManager_Main : MonoBehaviour {
         set
         {
             selectIndex = value;
-            switch (selectIndex)
+            switch (selectIndex) 
             {
                 case 1://Gallag
                     gallagButton.GetComponentInChildren<Outline>().enabled = true;

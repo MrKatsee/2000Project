@@ -314,13 +314,11 @@ public class Snake : MonoBehaviour {
                             snake.isAppleIsNull = true;
                             UIManager_Snake.PlayEffect();
                             snake.Score += 50;
-                            if (snake.turn >= 1 && snake.turn <= 4) snake.Score += 100;
-                            else if (snake.turn == 5) snake.Score += 90;
-                            else if (snake.turn == 6) snake.Score += 80;
-                            else if (snake.turn == 7) snake.Score += 70;
-                            else if (snake.turn == 8) snake.Score += 60;
-                            else if (snake.turn == 9 || snake.turn == 10) snake.Score += 50;
-                            else if (snake.turn > 10) snake.Score += 10;
+                            if (snake.turn == 1) snake.Score += 150;
+                            else if (snake.turn == 2) snake.score += 125;
+                            else if (snake.turn >= 3 && snake.turn <= 4) snake.score += 100;
+                            else if (snake.turn >= 5 && snake.turn <= 8) snake.Score += 75;
+                            else if (snake.turn >= 9 && snake.turn <= 16) snake.Score += 50;
                             snake.turn = 0;
                             break;
                         }

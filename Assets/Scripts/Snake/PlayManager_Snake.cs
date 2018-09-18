@@ -196,7 +196,7 @@ public class PlayManager_Snake : MonoBehaviour {
         }
     }
 
-    int length = 9; // 필드의 한 변의 길이
+    int length = 13; // 필드의 한 변의 길이 안고쳐도 돼 호성아!
     float slotSize { get { return Mathf.Abs((UIManager_Snake.TopLeftPos - GetPosition(1, 1)).x * 2); } }
     float delaySecond = 0.15f;
 
