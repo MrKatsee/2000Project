@@ -134,6 +134,7 @@ public class UIManager_Snake : MonoBehaviour {
         BGM = Resources.Load<AudioClip>("Sounds/SnakeBGM");
         WIN = Resources.Load<AudioClip>("Sounds/SnakeWin");
         ATE = Resources.Load<AudioClip>("Sounds/SnakeAte");
+        OOPS = Resources.Load<AudioClip>("Sounds/SnakeOops");
         LOSE = Resources.Load<AudioClip>("Sounds/SnakeLose");
         audioSource = GetComponent<AudioSource>();
     }
@@ -145,6 +146,7 @@ public class UIManager_Snake : MonoBehaviour {
     AudioClip WIN;
     AudioClip ATE;
     AudioClip LOSE;
+    AudioClip OOPS;
 
     AudioSource audioSource;
 
@@ -211,23 +213,18 @@ public class UIManager_Snake : MonoBehaviour {
     {
         if (!rawImage) yield break;
         audioSource.Stop();
-        yield return new WaitForSeconds(1.5f);
+        if (!isAlive) PlayEffect(OOPS, 1f);
+        yield return new WaitForSeconds(0.9f);
         int length = PlayManager_Snake.Length;
-        float delayTime = 1f / (length * length);
-        float time = 0f;
-        for(int x = 0; x < length; ++x)
+        float delayTime = 0.6f / length;
+        for (int y = 0; y < length; ++y)
         {
-            for (int y = 0; y < length; ++y)
+            for (int x = 0; x < length; ++x)
             {
-                time += Time.deltaTime;
-                yield return null;
-                if (time >= delayTime)
-                {
-                    RawImage newObject = Instantiate<RawImage>(rawImage, transform);
-                    newObject.rectTransform.position = new Vector2(topLeftPos.x + (x * newObject.rectTransform.sizeDelta.x), topLeftPos.y - (y * newObject.rectTransform.sizeDelta.y));
-                    time = 0;
-                }
+                RawImage newObject = Instantiate<RawImage>(rawImage, transform);
+                newObject.rectTransform.position = new Vector2(topLeftPos.x + (x * newObject.rectTransform.sizeDelta.x), topLeftPos.y - (y * newObject.rectTransform.sizeDelta.y));
             }
+            yield return new WaitForSeconds(delayTime);
         }
         yield return new WaitForSeconds(delayTime);
         Destroy(uiManager.scoreText.gameObject);
