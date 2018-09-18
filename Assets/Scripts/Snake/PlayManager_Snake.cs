@@ -160,18 +160,34 @@ public class PlayManager_Snake : MonoBehaviour {
                     }
                     break;
                 }
+            case "Grass":
+                {
+                    if(prefab && grassSprite)
+                    {
+                        GameObject newObject = Instantiate(prefab);
+                        newObject.GetComponent<SpriteRenderer>().sprite = grassSprite;
+                        newObject.GetComponent<SpriteRenderer>().sortingOrder = -2;
+                        newObject.transform.position = GetPosition(x, y);
+                        newObject.name = tag;
+                        newObject.transform.localScale = SizeOfSlot;
+                        newObject.GetComponent<Collider2D>().enabled = false;
+                    }
+                    break;
+                }
         }
     }
 
     private static GameObject prefab;
     private static Sprite wallSprite;
     private static Sprite appleSprite;
+    private static Sprite grassSprite;
 
     void InitManager()
     {
         prefab = Resources.Load<GameObject>("Prefabs/SpriteObject");
         wallSprite = Resources.Load<Sprite>("Sprites/Wall");
         appleSprite = Resources.Load<Sprite>("Sprites/Apple");
+        grassSprite = Resources.Load<Sprite>("Sprites/Grass");
         UIManager_Snake.Init();
         Snake.Init();
         Vector2 firstVector = Camera.main.WorldToScreenPoint(GetPosition(1, 1));
@@ -192,6 +208,13 @@ public class PlayManager_Snake : MonoBehaviour {
             {
                 CreateObject(1, y, "Wall");
                 CreateObject(length, y, "Wall");
+            }
+        }
+        for(int y = 1; y <= length; ++y)
+        {
+            for(int x = 1; x <= length; ++x)
+            {
+                CreateObject(x, y, "Grass");
             }
         }
     }

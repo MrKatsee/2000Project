@@ -122,6 +122,8 @@ public class UIManager_Snake : MonoBehaviour {
         RectTransform downImageTransform = transform.Find("DownImage").GetComponent<RectTransform>();
         RectTransform leftImageTransform = transform.Find("LeftImage").GetComponent<RectTransform>();
         RectTransform rightImageTransform = transform.Find("RightImage").GetComponent<RectTransform>();
+        RectTransform cienTransform = transform.Find("CienImage").GetComponent<RectTransform>();
+        RectTransform snakeTransform = transform.Find("SnakeImage").GetComponent<RectTransform>();
         Vector2 updownSizeVector = new Vector2(screenSize.x, screenSize.y / 18);
         upImageTransform.sizeDelta = updownSizeVector;
         downImageTransform.sizeDelta = updownSizeVector;
@@ -130,6 +132,11 @@ public class UIManager_Snake : MonoBehaviour {
         rightImageTransform.sizeDelta = new Vector2((screenSize.x - gameScreenSizeValue) * .5f, screenSize.y);
         topLeftPos = new Vector3((screenSize.x - gameScreenSizeValue) * .5f, screenSize.y / 18 * 17);
         botRightPos = new Vector3((screenSize.x - gameScreenSizeValue) * .5f + gameScreenSizeValue, screenSize.y - (screenSize.y / 18 * 17));
+        cienTransform.sizeDelta = new Vector2(screenSize.x / 12, screenSize.y / 2);
+        cienTransform.position = new Vector2(screenSize.x / 10 * 1, screenSize.y / 15 * 14);
+        snakeTransform.sizeDelta = new Vector2(screenSize.x / 12, screenSize.y / 3 * 2);
+        snakeTransform.position = new Vector2(screenSize.x / 10 * 9, screenSize.y / 15 * 14);
+        Debug.Log(cienTransform);
         myFont = Resources.Load<Font>("Fonts/DungGeunMo");
         BGM = Resources.Load<AudioClip>("Sounds/SnakeBGM");
         WIN = Resources.Load<AudioClip>("Sounds/SnakeWin");
@@ -188,7 +195,7 @@ public class UIManager_Snake : MonoBehaviour {
         scoreText.rectTransform.parent = transform;
         scoreText.rectTransform.anchorMin = new Vector2(0, 1);
         scoreText.rectTransform.anchorMax = new Vector2(0, 1);
-        scoreText.rectTransform.pivot = new Vector2(0, 1);
+        scoreText.rectTransform.pivot = new Vector2(0, 0);
         scoreText.rectTransform.sizeDelta = new Vector2((screenSize.x - (screenSize.y / 18 * 16)) * .5f, screenSize.y / 18);
         scoreText.rectTransform.position = botRightPos;
     }
@@ -215,7 +222,12 @@ public class UIManager_Snake : MonoBehaviour {
         audioSource.Stop();
         if (!isAlive) PlayEffect(OOPS, 1f);
         yield return new WaitForSeconds(0.9f);
+        RectTransform cienTransform = transform.Find("CienImage").GetComponent<RectTransform>();
+        RectTransform snakeTransform = transform.Find("SnakeImage").GetComponent<RectTransform>();
+        Destroy(cienTransform.gameObject);
+        Destroy(snakeTransform.gameObject);
         int length = PlayManager_Snake.Length;
+
         float delayTime = 0.6f / length;
         for (int y = 0; y < length; ++y)
         {
