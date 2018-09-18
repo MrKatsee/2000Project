@@ -72,11 +72,11 @@ public class UIManager_Snake : MonoBehaviour {
         uiManager.rawImage.rectTransform.sizeDelta = size;
     }
 
-    public static void EndUI(bool isAlive)
+    public static void EndUI(bool isAlive, int score)
     {
         if (isInitalized)
         {
-            uiManager.StartCoroutine(uiManager.EndUIAnimation(isAlive));
+            uiManager.StartCoroutine(uiManager.EndUIAnimation(isAlive, score));
         }
     }
 
@@ -90,6 +90,23 @@ public class UIManager_Snake : MonoBehaviour {
                 uiManager.RemoveStartUI();
         }
     }
+
+    public static void SetScoreUI(int score)
+    {
+        if (isInitalized)
+        {
+            uiManager.SetScore(score);
+        }
+    }
+
+    public static void PlayEffect()
+    {
+        if (isInitalized)
+        {
+            uiManager.PlayEffect(uiManager.ATE, 0.8f);
+        }
+    }
+
 
     Vector2 topLeftPos;
     Vector2 botRightPos;
@@ -113,15 +130,28 @@ public class UIManager_Snake : MonoBehaviour {
         rightImageTransform.sizeDelta = new Vector2((screenSize.x - gameScreenSizeValue) * .5f, screenSize.y);
         topLeftPos = new Vector3((screenSize.x - gameScreenSizeValue) * .5f, screenSize.y / 18 * 17);
         botRightPos = new Vector3((screenSize.x - gameScreenSizeValue) * .5f + gameScreenSizeValue, screenSize.y - (screenSize.y / 18 * 17));
-        myFont = Resources.Load<Font>("Fonts/NanumBarunGothic");
+        myFont = Resources.Load<Font>("Fonts/DungGeunMo");
+        BGM = Resources.Load<AudioClip>("Sounds/SnakeBGM");
+        WIN = Resources.Load<AudioClip>("Sounds/SnakeWin");
+        ATE = Resources.Load<AudioClip>("Sounds/SnakeAte");
+        LOSE = Resources.Load<AudioClip>("Sounds/SnakeLose");
+        audioSource = GetComponent<AudioSource>();
     }
 
     Text startText;
+    Text scoreText;
+
+    AudioClip BGM;
+    AudioClip WIN;
+    AudioClip ATE;
+    AudioClip LOSE;
+
+    AudioSource audioSource;
 
     void StartUI()
     {
         startText = new GameObject("StartText").AddComponent<Text>();
-        startText.gameObject.AddComponent<Outline>();
+        startText.gameObject.AddComponent<Outline>().effectDistance = new Vector2(3, -3);
         startText.font = myFont;
         startText.resizeTextForBestFit = true;
         startText.alignment = TextAnchor.MiddleCenter;
@@ -132,6 +162,9 @@ public class UIManager_Snake : MonoBehaviour {
         startText.rectTransform.parent = transform;
         startText.rectTransform.sizeDelta = new Vector2(screenSize.x * 0.85f, screenSize.y *.5f);
         startText.rectTransform.localPosition = new Vector2(0, 0);
+        audioSource.clip = BGM;
+        audioSource.loop = true;
+        audioSource.Play();
     }
 
     void RemoveStartUI()
@@ -141,11 +174,43 @@ public class UIManager_Snake : MonoBehaviour {
             Destroy(startText.gameObject);
             startText = null;
         }
+        scoreText = new GameObject("ScoreText").AddComponent<Text>();
+        scoreText.gameObject.AddComponent<Outline>();
+        scoreText.font = myFont;
+        scoreText.resizeTextForBestFit = true;
+        scoreText.alignment = TextAnchor.MiddleLeft;
+        scoreText.resizeTextMinSize = 0;
+        scoreText.resizeTextMaxSize = 500;
+        scoreText.color = Color.white;
+        scoreText.text = "   Score : 0";
+        scoreText.rectTransform.parent = transform;
+        scoreText.rectTransform.anchorMin = new Vector2(0, 1);
+        scoreText.rectTransform.anchorMax = new Vector2(0, 1);
+        scoreText.rectTransform.pivot = new Vector2(0, 1);
+        scoreText.rectTransform.sizeDelta = new Vector2((screenSize.x - (screenSize.y / 18 * 16)) * .5f, screenSize.y / 18);
+        scoreText.rectTransform.position = botRightPos;
     }
 
-    IEnumerator EndUIAnimation(bool isAlive)
+    void SetScore(int score)
+    {
+        if (scoreText)
+        {
+            scoreText.text = "   Score : " + score;
+        }
+    }
+
+    void PlayEffect(AudioClip clip, float volume)
+    {
+        if (audioSource && clip)
+        {
+            audioSource.PlayOneShot(clip, volume);
+        }
+    }
+
+    IEnumerator EndUIAnimation(bool isAlive, int score)
     {
         if (!rawImage) yield break;
+        audioSource.Stop();
         yield return new WaitForSeconds(1.5f);
         int length = PlayManager_Snake.Length;
         float delayTime = 1f / (length * length);
@@ -164,6 +229,16 @@ public class UIManager_Snake : MonoBehaviour {
                 }
             }
         }
+        yield return new WaitForSeconds(delayTime);
+        Destroy(uiManager.scoreText.gameObject);
+        if (isAlive)
+        {
+            PlayEffect(WIN, 0.8f);
+        }
+        else
+        {
+            PlayEffect(LOSE, 0.8f);
+        }
 
         Text winlostText = new GameObject("WinLostText").AddComponent<Text>();
         winlostText.font = myFont;
@@ -171,12 +246,25 @@ public class UIManager_Snake : MonoBehaviour {
         winlostText.alignment = TextAnchor.MiddleCenter;
         winlostText.resizeTextMinSize = 0;
         winlostText.resizeTextMaxSize = 500;
-        if (isAlive) winlostText.text = "You Win!";
-        else winlostText.text = "You lose!";
+        if (isAlive) winlostText.text = "Victory!";
+        else winlostText.text = "Game Over!";
         winlostText.color = Color.black;
         winlostText.rectTransform.parent = transform;
         winlostText.rectTransform.sizeDelta = new Vector2(screenSize.x * 0.85f, screenSize.y / 10 * 3);
         winlostText.rectTransform.localPosition = new Vector2(0, screenSize.y / 5 * 1);
+
+        Text scoreText = new GameObject("ScoreText").AddComponent<Text>();
+        scoreText.font = myFont;
+        scoreText.resizeTextForBestFit = true;
+        scoreText.alignment = TextAnchor.MiddleCenter;
+        scoreText.resizeTextMinSize = 0;
+        scoreText.resizeTextMaxSize = 500;
+
+        scoreText.text = "Score : " + score;
+        scoreText.color = Color.black;
+        scoreText.rectTransform.parent = transform;
+        scoreText.rectTransform.sizeDelta = new Vector2(screenSize.x * 0.85f, screenSize.y / 10 * 1);
+        scoreText.rectTransform.localPosition = new Vector2(0, 0);
 
         Text noticeText = new GameObject("NoticeText").AddComponent<Text>();
         noticeText.font = myFont;
@@ -184,11 +272,11 @@ public class UIManager_Snake : MonoBehaviour {
         noticeText.alignment = TextAnchor.MiddleCenter;
         noticeText.resizeTextMinSize = 0;
         noticeText.resizeTextMaxSize = 500;
-        noticeText.text = "아무 키나 눌러 재도전 하세요.\nESC키를 누르면 메인 화면으로 돌아갑니다.";
+        noticeText.text = "아무 키나 눌러 재도전 하세요.\nESC키를 누르면\n메인 화면으로 돌아갑니다.";
         noticeText.color = Color.black;
         noticeText.rectTransform.parent = transform;
         noticeText.rectTransform.sizeDelta = new Vector2(screenSize.x * 0.85f, screenSize.y / 10 * 3);
-        noticeText.rectTransform.localPosition = new Vector2(0, screenSize.y / 5 * -1);
+        noticeText.rectTransform.localPosition = new Vector2(0, screenSize.y / 4 * -1);
 
         yield return new WaitUntil(() => Input.anyKeyDown);
         if (Input.GetKeyDown(KeyCode.Escape))

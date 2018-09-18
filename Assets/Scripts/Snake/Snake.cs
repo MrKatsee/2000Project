@@ -236,6 +236,7 @@ public class Snake : MonoBehaviour {
 
         public static void MoveObject(HeadDirection headDirection)
         {
+            snake.turn++;
             SnakeObject headObject = objects.First.Value;
             int x = headObject.x;
             int y = headObject.y;
@@ -300,6 +301,7 @@ public class Snake : MonoBehaviour {
                                 node = node.Previous;
                             }
                             snake.isAlive = false;
+                            
                             break;
                         }
                     case "Apple": // 먹었을 때는 머리 바로 다음 칸의 스프라이트만을 수정한다.
@@ -310,6 +312,16 @@ public class Snake : MonoBehaviour {
                             headObject.SetPosition();
                             SortObject(CreateObject(SnakeObjectType.Body, headDirection));
                             snake.isAppleIsNull = true;
+                            UIManager_Snake.PlayEffect();
+                            snake.Score += 50;
+                            if (snake.turn >= 1 && snake.turn <= 4) snake.Score += 100;
+                            else if (snake.turn == 5) snake.Score += 90;
+                            else if (snake.turn == 6) snake.Score += 80;
+                            else if (snake.turn == 7) snake.Score += 70;
+                            else if (snake.turn == 8) snake.Score += 60;
+                            else if (snake.turn == 9 || snake.turn == 10) snake.Score += 50;
+                            else if (snake.turn > 10) snake.Score += 10;
+                            snake.turn = 0;
                             break;
                         }
                 }
@@ -462,6 +474,21 @@ public class Snake : MonoBehaviour {
     }
 
     int length; // "처음" 길이
+    int turn = 0;
+    int score = 0;
+
+    int Score
+    {
+        get
+        {
+            return score;
+        }
+        set
+        {
+            score = value;
+            UIManager_Snake.SetScoreUI(score);
+        }
+    }
     bool isAlive;
     bool isAppleIsNull;
     [SerializeField]
@@ -515,6 +542,7 @@ public class Snake : MonoBehaviour {
         snake.InitSnake();
         UIManager_Snake.StartUI(true);
         PlayManager_Snake.CreateApple();
+        
 
         if (headDir == HeadDirection.Stop)
         {
@@ -528,6 +556,13 @@ public class Snake : MonoBehaviour {
             if (Input.GetKey(KeyCode.LeftArrow)) headDir = HeadDirection.Left;
             if (Input.GetKey(KeyCode.RightArrow)) headDir = HeadDirection.Right;
             UIManager_Snake.StartUI(false);
+            SnakeObject.MoveObject(headDir);
+            if (isAppleIsNull)
+            {
+                PlayManager_Snake.CreateApple();
+                isAppleIsNull = false;
+            }
+            
         }
 
         while (isAlive)
@@ -548,12 +583,13 @@ public class Snake : MonoBehaviour {
         if (isAlive)
         {
             // 2김
-            UIManager_Snake.EndUI(true);
+            Score += 50000;
+            UIManager_Snake.EndUI(true, score);
         }
         else
         {
             // 짐
-            UIManager_Snake.EndUI(false);
+            UIManager_Snake.EndUI(false, score);
         }
     }
 
