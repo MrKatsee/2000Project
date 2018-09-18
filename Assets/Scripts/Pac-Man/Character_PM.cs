@@ -12,12 +12,14 @@ public class Character_PM : MonoBehaviour {
      * Left : 3
      */
 
-    protected float speed = 10f;
+    protected float speed = 7.5f;
 
     Rigidbody2D r;
 
-    protected int directionNum = 1;
+    protected int directionNum = 4;
     protected int directionNum_Temp;
+
+    protected int dTriggerNum = 0;
 
     protected bool[] dTrigger = new bool[4]; 
     protected DTrigger[] characterDTrigger = new DTrigger[4];
@@ -43,8 +45,10 @@ public class Character_PM : MonoBehaviour {
 
     // Use this for initialization
     protected virtual void Start () {
-        r.velocity = DirectionToVector(directionNum) * speed;
-	}
+        //r.velocity = DirectionToVector(directionNum) * speed;
+
+
+    }
 
     // Update is called once per frame
     protected virtual void Update () {
@@ -55,11 +59,10 @@ public class Character_PM : MonoBehaviour {
             tempPosition.x = transform.position.x >= 0f ? (int)transform.position.x + 0.5f : (int)transform.position.x - 0.5f;
             tempPosition.y = transform.position.y >= 0f ? (int)transform.position.y + 0.5f : (int)transform.position.y - 0.5f;
 
-            Debug.Log(tempPosition);
-            Debug.Log(transform.position);
-
             ProcessPM();
         }
+
+
 	}
 
     protected Vector2 DirectionToVector(int dNum)
@@ -82,6 +85,10 @@ public class Character_PM : MonoBehaviour {
         {
             dVector = new Vector2(-1f, 0f);
         }
+        else
+        {
+            dVector = new Vector2(0f, 0f);
+        }
 
         return dVector;
     }
@@ -100,14 +107,37 @@ public class Character_PM : MonoBehaviour {
 
         directionNum_Temp = directionNum;
 
-        if (characterDTrigger[directionNum_Temp].trigger == true)
+        if (directionNum_Temp == 4)
         {
             r.velocity = new Vector2(0f, 0f);
+            return;
         }
         else
         {
-            r.velocity = DirectionToVector(directionNum) * speed;
+
+            if (characterDTrigger[directionNum_Temp].trigger == true)
+            {
+                r.velocity = new Vector2(0f, 0f);
+                if (pNum == 0)
+                {
+                    if ((characterDTrigger[(directionNum_Temp + 1) % 4].trigger == true))
+                    {
+                        directionNum_Temp = (directionNum_Temp + 3) % 4;
+
+                    }
+                    else
+                    {
+                        directionNum_Temp = (directionNum_Temp + 1) % 4;
+
+                    }
+                }
+            }
+            else
+            {
+                r.velocity = DirectionToVector(directionNum) * speed;
+            }
         }
+
 
     }
 }

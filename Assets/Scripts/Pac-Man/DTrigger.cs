@@ -13,22 +13,22 @@ public class DTrigger : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 	}
 
-    private void OnTriggerExit2D(Collider2D c)
+    private void OnTriggerStay2D(Collider2D c)
     {
-        if (c.name == "Tile_Wall")
-        {
-            trigger = false;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D c)
-    {
-        if (c.name == "Tile_Wall")
+        if (c.name == "Tile_Wall" || c.tag == "Tile_Wall")
         {
             trigger = true;
         }
     }
 
+    private void OnTriggerExit2D(Collider2D c)
+    {
+        if (c.name == "Tile_Wall" || c.tag == "Tile_Wall")
+        {
+            trigger = false;
+        }
+    }
 }
