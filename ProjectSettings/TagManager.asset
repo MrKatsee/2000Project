@@ -4,8 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PacMan
-  - Tile_Wall
+  - Head
+  - Body
+  - Tail
+  - Wall
+  - Apple
   layers:
   - Default
   - TransparentFX
