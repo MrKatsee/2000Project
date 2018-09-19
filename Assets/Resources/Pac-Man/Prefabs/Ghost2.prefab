@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 50229064673323398}
   - component: {fileID: 61182620511013350}
   - component: {fileID: 114575205288060658}
+  - component: {fileID: 114989631468484418}
   m_Layer: 0
   m_Name: Ghost2
   m_TagString: PacMan
@@ -324,6 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pNum: 0
+  stun: 0
 --- !u!114 &114581417508130842
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -372,6 +374,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trigger: 0
+--- !u!114 &114989631468484418
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1970450332271226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64ba5721ea516f448aa7002484e0c863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212664559185860884
 SpriteRenderer:
   m_ObjectHideFlags: 1

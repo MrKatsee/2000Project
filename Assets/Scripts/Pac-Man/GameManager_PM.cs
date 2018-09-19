@@ -76,6 +76,9 @@ public class GameManager_PM : MonoBehaviour {
 
     IEnumerator GameTimer_PM()
     {
+        yield return new WaitForSeconds(5f);
+
+        Instantiate(Resources.Load("Pac-Man/Prefabs/Ghost") as GameObject, new Vector3(-0.5f, -4.5f, 0f), Quaternion.identity);
 
         yield return new WaitForSeconds(15f);
 

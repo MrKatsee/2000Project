@@ -26,7 +26,11 @@ public class Character_PM : MonoBehaviour {
 
     protected Vector2 tempPosition;
 
+    protected GameObject sprite;
+
     public int pNum;
+
+    public float stun = 0f;
 
     private void Awake()
     {
@@ -62,8 +66,18 @@ public class Character_PM : MonoBehaviour {
             ProcessPM();
         }
 
-
-	}
+        if (stun > 0f)
+        {
+            stun -= Time.deltaTime;
+            r.velocity = new Vector2(0f, 0f);
+            transform.position = tempPosition;
+            sprite.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+        }
+        else if (pNum != 0)
+        {
+            sprite.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+        }
+    }
 
     protected Vector2 DirectionToVector(int dNum)
     {

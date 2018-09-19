@@ -19,19 +19,20 @@ public class UIManager_Main : MonoBehaviour {
             switch (selectIndex) 
             {
                 case 1://Gallag
-                    gallagButton.GetComponentInChildren<Outline>().enabled = true;
-                    snakeButton.GetComponentInChildren<Outline>().enabled = false;
-                    packManButton.GetComponentInChildren<Outline>().enabled = false;
+                    gallagButton.GetComponent<Image>().sprite = buttonSprite[1];
+                    snakeButton.GetComponent<Image>().sprite = buttonSprite[2];
+                    packManButton.GetComponent<Image>().sprite = buttonSprite[4];
+
                     break;
                 case 2://Snake
-                    gallagButton.GetComponentInChildren<Outline>().enabled = false;
-                    snakeButton.GetComponentInChildren<Outline>().enabled = true;
-                    packManButton.GetComponentInChildren<Outline>().enabled = false;
+                    gallagButton.GetComponent<Image>().sprite = buttonSprite[0];
+                    snakeButton.GetComponent<Image>().sprite = buttonSprite[3];
+                    packManButton.GetComponent<Image>().sprite = buttonSprite[4];
                     break;
                 case 3://Pac-Man
-                    gallagButton.GetComponentInChildren<Outline>().enabled = false;
-                    snakeButton.GetComponentInChildren<Outline>().enabled = false;
-                    packManButton.GetComponentInChildren<Outline>().enabled = true;
+                    gallagButton.GetComponent<Image>().sprite = buttonSprite[0];
+                    snakeButton.GetComponent<Image>().sprite = buttonSprite[2];
+                    packManButton.GetComponent<Image>().sprite = buttonSprite[5];
                     break;
             }
         }
@@ -45,12 +46,11 @@ public class UIManager_Main : MonoBehaviour {
     public AudioSource audioSource;
     public AudioClip BGM;
     public AudioClip SFX;
+    public Sprite[] buttonSprite = new Sprite[6];
 
     private void Start()
     {
-        gallagButton.GetComponentInChildren<Outline>().enabled = false;
-        snakeButton.GetComponentInChildren<Outline>().enabled = false;
-        packManButton.GetComponentInChildren<Outline>().enabled = false;
+
         fadeOutEffect.color = Color.clear;
         if (audioSource && BGM)
         {

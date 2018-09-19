@@ -30,7 +30,6 @@ public class TileChecker : MonoBehaviour {
 
         Instantiate(Resources.Load("Pac-Man/Prefabs/PacMan_1") as GameObject, new Vector3(-9.5f, -0.5f, 0f), Quaternion.identity);
         Instantiate(Resources.Load("Pac-Man/Prefabs/PacMan_2") as GameObject, new Vector3(9.5f, -0.5f, 0f), Quaternion.identity);
-        Instantiate(Resources.Load("Pac-Man/Prefabs/Ghost") as GameObject, new Vector3(-0.5f, -4.5f, 0f), Quaternion.identity);
 
         Destroy(gameObject);
 	}

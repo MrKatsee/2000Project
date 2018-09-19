@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ghost : Character_PM {
+public class Ghost : MonoBehaviour {
 
-    protected override void Update()
+    private void OnTriggerEnter2D(Collider2D c)
     {
-        base.Update();
-
-
+        if(c.tag == "PacMan")
+        {
+            if(c.GetComponent<Character_PM>().pNum != 0 && c.GetComponent<Character_PM>().stun <= 0f)
+            {
+                c.GetComponent<Character_PM>().stun = 3f;
+            }
+        }
     }
 }

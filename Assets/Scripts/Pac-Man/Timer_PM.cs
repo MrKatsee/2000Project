@@ -32,13 +32,13 @@ public class Timer_PM : MonoBehaviour {
 
         while(true)
         {
-            if (timer >= 10f)
+            if (timer >= 65f)
             {
                 break;
             }
 
             timer += Time.deltaTime;
-            timerImage.fillAmount = timer / 10f;
+            timerImage.fillAmount = timer / 65f;
             yield return null;
         }
 
